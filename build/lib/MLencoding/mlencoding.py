@@ -6,12 +6,10 @@ from pyglmnet import GLM
 
 #NN
 from keras.models import Sequential
-# from keras.layers.core import Dense, Dropout, Activation, Lambda
-from keras.layers import Dense, Dropout, Activation, Lambda, BatchNormalization
+from keras.layers.core import Dense, Dropout, Activation, Lambda
 from keras.regularizers import l2
-# from keras.optimizers import Nadam, adam
-from keras.optimizers import Adam as adam
-from keras.optimizers import Nadam
+from keras.optimizers import Nadam, adam
+from keras.layers.normalization import BatchNormalization
 
 #CV
 from sklearn.model_selection import KFold
@@ -25,8 +23,7 @@ from sklearn.ensemble import RandomForestRegressor
 #LSTM
 from keras.layers import  LSTM
 from keras.models import Sequential
-# from keras.layers.core import Dense, Dropout, Activation, Lambda
-from keras.layers import Dense, Dropout, Activation, Lambda
+from keras.layers.core import Dense, Dropout, Activation, Lambda
 
 class MLencoding(object):
     """
@@ -159,7 +156,7 @@ class MLencoding(object):
         # Assign 'default' parameters;
         if tunemodel == 'glm':
             self.params = {'distr':'softplus', 'alpha':0.1, 'tol':1e-8,
-              'reg_lambda':0, # np.logspace(np.log(0.05), np.log(0.0001), 10, base=np.exp(1))
+              'reg_lambda':np.logspace(np.log(0.05), np.log(0.0001), 10, base=np.exp(1)),
               'learning_rate':2, 'max_iter':10000, 'eta':2.0}
         elif tunemodel == 'feedforward_nn':
             self.params = {'dropout': 0.05,
@@ -259,20 +256,9 @@ class MLencoding(object):
                             , activation='relu',kernel_regularizer=l2(params['l2'])))
             model.add(BatchNormalization())
             model.add(Dense(1,activation='softplus'))
-            # optim = adam(lr=params['lr'], clipnorm=params['clipnorm'],
-            #                 decay = params['decay'],
-            #                 beta_1=1-params['b1'], beta_2=1-params['b2'])
-            from tensorflow.keras.optimizers.schedules import ExponentialDecay
-
-            lr_schedule = ExponentialDecay(
-                initial_learning_rate=params['lr'],
-                decay_steps=10000,
-                decay_rate=params['decay']
-            )
-
-            optim = adam(learning_rate=lr_schedule, clipnorm=params['clipnorm'],
-                        beta_1=1 - params['b1'], beta_2=1 - params['b2'])
-
+            optim = adam(lr=params['lr'], clipnorm=params['clipnorm'],
+                            decay = params['decay'],
+                            beta_1=1-params['b1'], beta_2=1-params['b2'])
             model.compile(loss='poisson', optimizer=optim,)
             hist = model.fit(X, Y, batch_size = 128, epochs=30, verbose=self.verbose)
 
@@ -297,10 +283,8 @@ class MLencoding(object):
             params = self.params
             model=Sequential() #Declare model
             #Add recurrent layer
-            # model.add(LSTM(int(params['n_units']),input_shape=(X.shape[1],X.shape[2]),\
-            #                dropout_W=params['dropout'],dropout_U=params['dropout']))
-            model.add(LSTM(int(params['n_units']), input_shape=(X.shape[1], X.shape[2]),
-               dropout=params['dropout'], recurrent_dropout=params['dropout']))
+            model.add(LSTM(int(params['n_units']),input_shape=(X.shape[1],X.shape[2]),\
+                           dropout_W=params['dropout'],dropout_U=params['dropout']))
                             #Within recurrent layer, include dropout
             model.add(Dropout(params['dropout'])) #Dropout some units (recurrent layer output units)
 

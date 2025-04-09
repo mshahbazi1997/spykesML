@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 import setuptools  # noqa; we are using a setuptools namespace
-from numpy.distutils.core import setup
+# from numpy.distutils.core import setup
+from setuptools import setup
 
 descr = """Fast implementation of machine learning methods for binned spike
             prediction."""
