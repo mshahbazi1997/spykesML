@@ -1,4 +1,4 @@
-Metadata-Version: 2.2
+Metadata-Version: 2.1
 Name: MLencoding
 Version: 0.1.dev0
 Summary: Fast implementation of machine learning methods for binned spike
@@ -18,14 +18,6 @@ Classifier: Operating System :: POSIX
 Classifier: Operating System :: Unix
 Classifier: Operating System :: MacOS
 License-File: LICENSE
-Dynamic: classifier
-Dynamic: description
-Dynamic: download-url
-Dynamic: license
-Dynamic: maintainer
-Dynamic: maintainer-email
-Dynamic: platform
-Dynamic: summary
 
 # SpykesML
 ## How to build encoding models with machine learning methods
